@@ -6,7 +6,7 @@
 </br>
 ファイルに以下のコードを追加しましょう。
 </br>
-'''ruby:code.rb
+'''rb
 export PATH=/usr/bin:/usr/local/bin:/path/to/javac
 '''
 </br>
@@ -18,7 +18,7 @@ javacコマンドのフルパスを追加しましょう。そしたら、ファ
 </br>
 デスクトップ上で新しいテキストファイルを作成します。
 テキストファイルの内容に以下のように書き込みます。compile.shで保存しましょう。
-'''bash:compile.sh
+'''sh
 #!/bin/bash
 javac ファイル名.java
 '''
