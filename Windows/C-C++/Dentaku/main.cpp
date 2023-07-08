@@ -9,12 +9,11 @@ int main(void){
   char enzan;
 
   std::cout << "¥n________  _________ ___    __ ___________ ___________ ___  __ __       __¥n" std::endl;
-  std::cout << "" std::endl;
-  std::cout << "" std::endl;
-  std::cout << "" std::endl;
-  std::cout << "" std::endl;
-  std::cout << "" std::endl;
-  std::cout << "" std::endl;
+  std::cout << "|   ___  ¥|   ______|   ¥  |  |____   ____|  _______  |  | / /|  |     |  |" std::endl;
+  std::cout << "|  |   |  |  |______|  | ¥ |  |   |  |    |  |     |  |  |/ / |  |     |  |" std::endl;
+  std::cout << "|  |   |  |   ______|  |¥ ¥|  |   |  |    |  |_____|  |    /  |  |     |  |" std::endl;
+  std::cout << "|  |___|  |  |______|  | ¥ ¥  |   |  |    |  |     |  |  |¥ ¥ |  |_____|  |" std::endl;
+  std::cout << "|________/|_________|__|  ¥___|   |__|    |__|     |__|__| ¥_¥|___________|" std::endl;
 
   printf("これはコマンドプロンプト上で計算を行う簡易電子計算機です。¥nソースコードはGitHubに貼ってあります。->'https://github.com/Pochi-Liberluna/Tool/Windows/C-C++/Dentaku/'¥n");
 
