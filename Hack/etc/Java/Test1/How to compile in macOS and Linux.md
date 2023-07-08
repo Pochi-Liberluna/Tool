@@ -19,7 +19,7 @@ javacコマンドのフルパスを追加しましょう。そしたら、ファ
 デスクトップ上で新しいテキストファイルを作成します。
 テキストファイルの内容に以下のように書き込みます。compile.shで保存しましょう。
 </br>
-```ShellScript:compile.sh
+```shellscript:compile.sh
 #!/bin/bash
 javac ファイル名.java
 ```
