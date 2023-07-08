@@ -21,7 +21,7 @@ javacコマンドのフルパスを追加しましょう。そしたら、ファ
 </br>
 
 #!/bin/bash
-```
+```shellscript:compile.sh
 javac ファイル名.java
 ```
 </br>
