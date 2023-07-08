@@ -8,12 +8,12 @@ int main(void){
   float sahen,uhen,answer;
   char enzan;
 
-  std::cout << "¥n________  _________ ___    __ ___________ ___________ ___  __ __       __\n" std::endl;
-  std::cout << "|   ___  \|   ______|   \  |  |____   ____|  _______  |  | / /|  |     |  |\n" std::endl;
-  std::cout << "|  |   |  |  |______|  | \ |  |   |  |    |  |     |  |  |/ / |  |     |  |\n" std::endl;
-  std::cout << "|  |   |  |   ______|  |\ \|  |   |  |    |  |_____|  |    /  |  |     |  |\n" std::endl;
-  std::cout << "|  |___|  |  |______|  | \    |   |  |    |  |     |  |  |\ \ |  |_____|  |\n" std::endl;
-  std::cout << "|________/|_________|__|  \___|   |__|    |__|     |__|__| \_\|___________|\n" std::endl;
+  std::cout << "¥n________  _________ ___    __ ___________ ___________ ___  __ __       __\n" << std::endl;
+  std::cout << "|   ___  \|   ______|   \  |  |____   ____|  _______  |  | / /|  |     |  |\n" << std::endl;
+  std::cout << "|  |   |  |  |______|  | \ |  |   |  |    |  |     |  |  |/ / |  |     |  |\n" << std::endl;
+  std::cout << "|  |   |  |   ______|  |\ \|  |   |  |    |  |_____|  |    /  |  |     |  |\n" << std::endl;
+  std::cout << "|  |___|  |  |______|  | \    |   |  |    |  |     |  |  |\ \ |  |_____|  |\n" << std::endl;
+  std::cout << "|________/|_________|__|  \___|   |__|    |__|     |__|__| \_\|___________|\n" << std::endl;
 
   printf("これはコマンドプロンプト上で計算を行う簡易電子計算機です。¥nソースコードはGitHubに貼ってあります。->'https://github.com/Pochi-Liberluna/Tool/Windows/C-C++/Dentaku/'¥n");
 
@@ -29,14 +29,14 @@ int main(void){
   scanf("%f",&uhen);
 
   if(enzan == '+'){
-    answer = a + b;
+    answer = sahen + uhen;
   } else if(enzan == '-'){
-    ansewr = a - b;
+    answer = sahen - uhen;
   } else if(enzan == '*'){
-    answer = a * b;
+    answer = sahen * uhen;
   } else if(enzan == '/'){
-    if(b != 0){
-    answer = a / b;
+    if(uhen != 0){
+    answer = sahen / uhen;
   } else{
       printf("0では割り算ができません。¥n");
       return 0;
