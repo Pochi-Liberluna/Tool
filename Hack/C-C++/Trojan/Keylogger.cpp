@@ -1,3 +1,6 @@
+//Pythonで作ったプログラムをCとC++に変換しました。
+//Pythonのコードは https://github.com/Pochi-Liberluna/Tool/tree/main/Hack/Python/Trojan/Keylogger.py に公開してあります。
+//Cのコードは https://github.com/Pochi-Liberluna/Tool/tree/main/Hack/C-C++/Trojan/Keylogger.c に公開してあります。
 #include <iostream>
 #include <fstream>
 #include <chrono>
