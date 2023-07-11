@@ -4,54 +4,59 @@
 
 using namespace std;
 
-int main(void){
-  float sahen,uhen,answer;
-  char enzan;
+int main(void) {
+    float sahen, uhen, answer;
+    char enzan;
 
-  printf("¥n");
+    printf("\n");
 
-  //AAを表示
-  std::cout << " ________  _________ ___    __ ___________ ___________ ___  __ __       __\n" << std::endl;
-  std::cout << "|   ___  \|   ______|   \  |  |____   ____|  _______  |  | / /|  |     |  |\n" << std::endl;
-  std::cout << "|  |   |  |  |______|  | \ |  |   |  |    |  |     |  |  |/ / |  |     |  |\n" << std::endl;
-  std::cout << "|  |   |  |   ______|  |\ \|  |   |  |    |  |_____|  |    /  |  |     |  |\n" << std::endl;
-  std::cout << "|  |___|  |  |______|  | \    |   |  |    |  |     |  |  |\ \ |  |_____|  |\n" << std::endl;
-  std::cout << "|________/|_________|__|  \___|   |__|    |__|     |__|__| \_\|___________|       made by Pochi-Liberluna.\n" << std::endl;
+    //AAを表示
+    std::cout << " ________  _________ ___    __ ___________ ___________ ___  __ __       __\n" << std::endl;
+    std::cout << "|   ___  \|   ______|   \  |  |____   ____|  _______  |  | / /|  |     |  |\n" << std::endl;
+    std::cout << "|  |   |  |  |______|  | \ |  |   |  |    |  |     |  |  |/ / |  |     |  |\n" << std::endl;
+    std::cout << "|  |   |  |   ______|  |\ \|  |   |  |    |  |_____|  |    /  |  |     |  |\n" << std::endl;
+    std::cout << "|  |___|  |  |______|  | \    |   |  |    |  |     |  |  |\ \ |  |_____|  |\n" << std::endl;
+    std::cout << "|________/|_________|__|  \___|   |__|    |__|     |__|__| \_\|___________|       made by Pochi-Liberluna.\n" << std::endl;
 
-  printf("これはコマンドプロンプト上で計算を行う簡易電子計算機です。¥nソースコードはGitHubに貼ってあります。-> https://github.com/Pochi-Liberluna/Tool/Windows/C-C++/Dentaku/ ¥n");
+    printf("これはコマンドプロンプト上で計算を行う簡易電子計算機です。¥nソースコードはGitHubに貼ってあります。-> https://github.com/Pochi-Liberluna/Tool/Windows/C-C++/Dentaku/ \n");
 
-  printf("数値1を入力してください。=>");
-  scanf("%f",&sahen);
+    printf("数値1を入力してください。=>");
+    scanf("%f", &sahen);
 
-  getchar();
-    
-  printf("¥n演算子を入力してください。=>");
-  scanf("%c",&enzan);
+    getchar();
 
-  printf("¥n数値2を入力してください。=>");
-  scanf("%f",&uhen);
+        printf("\n演算子を入力してください。=>");
+    scanf("%c", &enzan);
 
-  if(enzan == '+'){
-    answer = sahen + uhen;
-  } else if(enzan == '-'){
-    answer = sahen - uhen;
-  } else if(enzan == '*'){
-    answer = sahen * uhen;
-  } else if(enzan == '/'){
-    if(uhen != 0){
-    answer = sahen / uhen;
-  } else{
-      printf("0では割り算ができません。¥n");
-      return 0;
-  }
-} else{
-    printf("無効な演算子です。¥n");
+    printf("\n数値2を入力してください。=>");
+    scanf("%f", &uhen);
+
+    if (enzan == '+') {
+        answer = sahen + uhen;
+    }
+    else if (enzan == '-') {
+        answer = sahen - uhen;
+    }
+    else if (enzan == '*') {
+        answer = sahen * uhen;
+    }
+    else if (enzan == '/') {
+        if (uhen != 0) {
+            answer = sahen / uhen;
+        }
+        else {
+            printf("0では割り算ができません。\n");
+            return 0;
+        }
+    }
+    else {
+        printf("無効な演算子です。\n");
+        return 0;
+    }
+
+    printf("計算結果:%.2f\n", answer); //少数第二位まで表示
+
     return 0;
-}
-
-  printf("計算結果:%.2f¥n",answer); //少数第二位まで表示
-
-  return 0;
 }
 //AA描くのめんどい
 
