@@ -18,7 +18,7 @@ int main(void) {
     std::cout << "|  |___|  |  |______|  | \    |   |  |    |  |     |  |  |\ \ |  |_____|  |\n" << std::endl;
     std::cout << "|________/|_________|__|  \___|   |__|    |__|     |__|__| \_\|___________|       made by Pochi-Liberluna.\n" << std::endl;
 
-    printf("これはコマンドプロンプト上で計算を行う簡易電子計算機です。¥nソースコードはGitHubに貼ってあります。-> https://github.com/Pochi-Liberluna/Tool/Windows/C-C++/Dentaku/ \n");
+    printf("これはコマンドプロンプト上で計算を行う簡易電子計算機です。\nソースコードはGitHubに貼ってあります。-> https://github.com/Pochi-Liberluna/Tool/Windows/C-C++/Dentaku/ \n");
 
     printf("数値1を入力してください。=>");
     scanf("%f", &sahen);
