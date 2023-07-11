@@ -23,7 +23,7 @@ int main(void){
   printf("数値1を入力してください。=>");
   scanf("%f",&sahen);
 
-  getchar()
+  getchar();
     
   printf("¥n演算子を入力してください。=>");
   scanf("%c",&enzan);
