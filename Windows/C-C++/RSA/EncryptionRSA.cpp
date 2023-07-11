@@ -1,4 +1,5 @@
-//Cで書いたものをGPTを使ってC++に変換しました。
+//Cで書いたものをGPTを使ってC++に変換しました。オブジェクト指向が苦手なのでこのコードを自力で書こうと思うと一生掛かっても書けません()
+//このコードは自由に変更してもらって構いません。
 #include <cstdio>
 #include <random>
 using bint = unsigned long long;
