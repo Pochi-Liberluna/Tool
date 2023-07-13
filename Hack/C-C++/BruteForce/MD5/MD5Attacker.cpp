@@ -230,7 +230,7 @@ int main(int argc, char *argv[]) {
     int i, j, t;
 
     if (argc <= 2) {
-        std::cout << "Usage: " << argv[0] << " <hash> <file_name>\n";
+        std::cout << "使用方法: " << argv[0] << " <hash> <file_name>\n";
         return 1;
     }
 
