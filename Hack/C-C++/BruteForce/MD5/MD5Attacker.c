@@ -195,7 +195,7 @@ int main(int argc, char *argv[]) {
     int i, j, t;
 
     if (argc <= 2) {
-        printf("Usage: %s <hash> <file_name>\n", argv[0]);
+        printf("使用方法: %s <hash> <file_name>\n", argv[0]);
         return 1;
     }
 
