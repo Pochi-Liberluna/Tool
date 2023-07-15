@@ -1,1 +1,1 @@
-
+javascript: (() => {document.designMode = "on"; const keyup = (e) => {if(e.key === "Escape"){document.designMode = "off"; document,removeEventListener('keyup',keyup);}}; document.addEventListener('keyup',keyup)})();
