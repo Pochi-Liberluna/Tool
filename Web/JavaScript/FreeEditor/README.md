@@ -19,6 +19,6 @@ javascript: (() => {document.designMode = "on"; const keyup = (e) => {if(e.key =
 </br>
 ページを追加→(ブックマークを編集というのが現れる)→名前の場所に任意の名前を付ける→URLと書かれてる場所に先ほどのJavaScriptコードをペースト→保存
 </br>
-では次に適当なサイトに飛んでください。今回は<a href="https://wikipedia.org.jp/">Wikipedia</a>にします。
+では次に適当なサイトに飛んでください。今回は<a href="https://ja.wikipedia.org/">Wikipedia</a>にします。
 </br>
 ページにアクセスできたらブックマークを有効にしましょう。そして内容を変更したい文のところにカーソルを持っていきクリックすると編集できます。
