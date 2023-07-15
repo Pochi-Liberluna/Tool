@@ -1,19 +1,26 @@
 /**
 import random
 from itertools import permutations
+import time
 
-characters = [ "", "", "",  "", "", "", "", ""]
+characters = ["0", "1", "2", "3"]
 count = 0
 
-for perm in permutations(characters):
-    shuffled_word = ''.join(perm)
-    print(shuffled_word)
-    count += 1
+if not characters:
+    print("エラー: 総当たりする文字列が設定されていません。")
+else:
+    start_time = time.time()
 
-print("出力できた単語数:", count, "語")
-input("終了するには Enter キーを押してください...")
+    for perm in permutations(characters):
+        shuffled_word = ''.join(perm)
+        print(shuffled_word)
+        count += 1
 
-Pythonで書けば10行近くなのにね、、
+    end_time = time.time()
+    elapsed_time = end_time - start_time
+    print("出力できた単語数:", count, "語", "{:.2f}秒".format(elapsed_time))
+
+Pythonで書けば20行近くなのにね、、
 GPTを使いPythonのコードをJavaに変換しました。
 **/
 import java.util.ArrayList;
@@ -21,21 +28,23 @@ import java.util.List;
 
 public class PermutationExample {
     public static void main(String[] args) {
-        String[] characters = {"", "", "", "", "", "", "", ""};
+        String[] characters = {"0", "1", "2", "3"};    //ここでは0,1,2,3の組み合わせを総当たりさせる
         int count = 0;
 
-        List<String> permutations = generatePermutations(characters);
-        for (String permutation : permutations) {
-            System.out.println(permutation);
-            count++;
-        }
+        if (characters.length == 0) {
+            System.out.println("エラー: 総当たりする文字列が設定されていません。");
+        } else {
+            long startTime = System.currentTimeMillis();
 
-        System.out.println("出力できた単語数: " + count + "語");
-        System.out.println("終了するには Enter キーを押してください...");
-        try {
-            System.in.read();
-        } catch (Exception e) {
-            e.printStackTrace();
+            List<String> permutations = generatePermutations(characters);
+            for (String permutation : permutations) {
+                System.out.println(permutation);
+                count++;
+            }
+
+            long endTime = System.currentTimeMillis();
+            double elapsedSeconds = (endTime - startTime) / 1000.0;
+            System.out.println("出力できた単語数: " + count + "語 " + String.format("%.2f秒", elapsedSeconds));
         }
     }
 
