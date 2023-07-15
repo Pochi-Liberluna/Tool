@@ -35,7 +35,7 @@ int main() {
 
         clock_t end_time = clock();
         double elapsed_time = (double)(end_time - start_time) / CLOCKS_PER_SEC;
-        printf("出力できた単語数: %d語 %.2f秒\n", count, elapsed_time);
+        printf("出力できた単語数: %d語 %.5f秒\n", count, elapsed_time);
     }
 
     return 0;
