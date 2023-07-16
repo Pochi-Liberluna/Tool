@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdint.h>
-#include <stdbool.h>
+#include <cuda_runtime.h>
+#include <cuda.h>
 
 #define MAX_BUFFER_SIZE 1024
 #define BYTE unsigned char
@@ -24,103 +24,144 @@
 
 typedef struct {
     WORD total[2];
-    WORD state[8];
+    WORD state[4];
     BYTE buffer[64];
-} sha256_context;
+} md5_context;
 
-const WORD K[64] = {
-    0x428A2F98UL, 0x71374491UL, 0xB5C0FBCFUL, 0xE9B5DBA5UL,
-    0x3956C25BUL, 0x59F111F1UL, 0x923F82A4UL, 0xAB1C5ED5UL,
-    0xD807AA98UL, 0x12835B01UL, 0x243185BEUL, 0x550C7DC3UL,
-    0x72BE5D74UL, 0x80DEB1FEUL, 0x9BDC06A7UL, 0xC19BF174UL,
-    0xE49B69C1UL, 0xEFBE4786UL, 0x0FC19DC6UL, 0x240CA1CCUL,
-    0x2DE92C6FUL, 0x4A7484AAUL, 0x5CB0A9DCUL, 0x76F988DAUL,
-    0x983E5152UL, 0xA831C66DUL, 0xB00327C8UL, 0xBF597FC7UL,
-    0xC6E00BF3UL, 0xD5A79147UL, 0x06CA6351UL, 0x14292967UL,
-    0x27B70A85UL, 0x2E1B2138UL, 0x4D2C6DFCUL, 0x53380D13UL,
-    0x650A7354UL, 0x766A0ABBUL, 0x81C2C92EUL, 0x92722C85UL,
-    0xA2BFE8A1UL, 0xA81A664BUL, 0xC24B8B70UL, 0xC76C51A3UL,
-    0xD192E819UL, 0xD6990624UL, 0xF40E3585UL, 0x106AA070UL,
-    0x19A4C116UL, 0x1E376C08UL, 0x2748774CUL, 0x34B0BCB5UL,
-    0x391C0CB3UL, 0x4ED8AA4AUL, 0x5B9CCA4FUL, 0x682E6FF3UL,
-    0x748F82EEUL, 0x78A5636FUL, 0x84C87814UL, 0x8CC70208UL,
-    0x90BEFFFAUL, 0xA4506CEBUL, 0xBEF9A3F7UL, 0xC67178F2UL
-};
-
-#define SHR(x, n) (((x) & 0xFFFFFFFFUL) >> (n))
-#define ROTR(x, n) (SHR((x), (n)) | ((x) << (32 - (n))))
-#define S0(x) (ROTR(x, 7) ^ ROTR(x, 18) ^ SHR(x, 3))
-#define S1(x) (ROTR(x, 17) ^ ROTR(x, 19) ^ SHR(x, 10))
-#define CH(x, y, z) ((x & y) ^ ((~x) & z))
-#define MAJ(x, y, z) ((x & y) ^ (x & z) ^ (y & z))
-
-#define EP0(x) (ROTR(x, 2) ^ ROTR(x, 13) ^ ROTR(x, 22))
-#define EP1(x) (ROTR(x, 6) ^ ROTR(x, 11) ^ ROTR(x, 25))
-#define SIG0(x) (ROTR(x, 7) ^ ROTR(x, 18) ^ SHR(x, 3))
-#define SIG1(x) (ROTR(x, 17) ^ ROTR(x, 19) ^ SHR(x, 10))
-
-void SHA256_starts(sha256_context *ctx) {
+__device__ void MD5_starts(md5_context *ctx) {
     ctx->total[0] = 0;
     ctx->total[1] = 0;
 
-    ctx->state[0] = 0x6A09E667UL;
-    ctx->state[1] = 0xBB67AE85UL;
-    ctx->state[2] = 0x3C6EF372UL;
-    ctx->state[3] = 0xA54FF53AUL;
-    ctx->state[4] = 0x510E527FUL;
-    ctx->state[5] = 0x9B05688CUL;
-    ctx->state[6] = 0x1F83D9ABUL;
-    ctx->state[7] = 0x5BE0CD19UL;
+    ctx->state[0] = 0x67452301;
+    ctx->state[1] = 0xEFCDAB89;
+    ctx->state[2] = 0x98BADCFE;
+    ctx->state[3] = 0x10325476;
 }
 
-void SHA256_process(sha256_context *ctx, BYTE data[64]) {
-    WORD state[8];
-    WORD W[64];
-    WORD temp1, temp2;
-    WORD A, B, C, D, E, F, G, H;
+__device__ void MD5_process(md5_context *ctx, BYTE data[64]) {
+    WORD X[16], A, B, C, D;
 
-    GET_WORD(W[0],  data,  0);
-    GET_WORD(W[1],  data,  4);
-    GET_WORD(W[2],  data,  8);
-    GET_WORD(W[3],  data, 12);
-    GET_WORD(W[4],  data, 16);
-    GET_WORD(W[5],  data, 20);
-    GET_WORD(W[6],  data, 24);
-    GET_WORD(W[7],  data, 28);
-    GET_WORD(W[8],  data, 32);
-    GET_WORD(W[9],  data, 36);
-    GET_WORD(W[10], data, 40);
-    GET_WORD(W[11], data, 44);
-    GET_WORD(W[12], data, 48);
-    GET_WORD(W[13], data, 52);
-    GET_WORD(W[14], data, 56);
-    GET_WORD(W[15], data, 60);
+    GET_WORD(X[0],  data,  0);
+    GET_WORD(X[1],  data,  4);
+    GET_WORD(X[2],  data,  8);
+    GET_WORD(X[3],  data, 12);
+    GET_WORD(X[4],  data, 16);
+    GET_WORD(X[5],  data, 20);
+    GET_WORD(X[6],  data, 24);
+    GET_WORD(X[7],  data, 28);
+    GET_WORD(X[8],  data, 32);
+    GET_WORD(X[9],  data, 36);
+    GET_WORD(X[10], data, 40);
+    GET_WORD(X[11], data, 44);
+    GET_WORD(X[12], data, 48);
+    GET_WORD(X[13], data, 52);
+    GET_WORD(X[14], data, 56);
+    GET_WORD(X[15], data, 60);
 
-    for (int i = 16; i < 64; i++) {
-        W[i] = SIG1(W[i-2]) + W[i-7] + SIG0(W[i-15]) + W[i-16];
-    }
+#define ROTATE_LEFT(x,n) ((x << n) | (x >> (32 - n)))
 
-    memcpy(state, ctx->state, sizeof(ctx->state));
-
-    for (int i = 0; i < 64; i++) {
-        temp1 = state[7] + EP1(state[4]) + CH(state[4], state[5], state[6]) + K[i] + W[i];
-        temp2 = EP0(state[0]) + MAJ(state[0], state[1], state[2]);
-        state[7] = state[6];
-        state[6] = state[5];
-        state[5] = state[4];
-        state[4] = state[3] + temp1;
-        state[3] = state[2];
-        state[2] = state[1];
-        state[1] = state[0];
-        state[0] = temp1 + temp2;
-    }
-
-    for (int i = 0; i < 8; i++) {
-        ctx->state[i] += state[i];
-    }
+#define FF(a,b,c,d,k,s,t)                                \
+{                                                       \
+    a += ((b & c) | (~b & d)) + X[k] + t; a = ROTATE_LEFT(a,s) + b; \
 }
 
-void SHA256_update(sha256_context *ctx, BYTE *input, WORD length) {
+    A = ctx->state[0];
+    B = ctx->state[1];
+    C = ctx->state[2];
+    D = ctx->state[3];
+
+    FF(A, B, C, D,  0,  7, 0xD76AA478);
+    FF(D, A, B, C,  1, 12, 0xE8C7B756);
+    FF(C, D, A, B,  2, 17, 0x242070DB);
+    FF(B, C, D, A,  3, 22, 0xC1BDCEEE);
+    FF(A, B, C, D,  4,  7, 0xF57C0FAF);
+    FF(D, A, B, C,  5, 12, 0x4787C62A);
+    FF(C, D, A, B,  6, 17, 0xA8304613);
+    FF(B, C, D, A,  7, 22, 0xFD469501);
+    FF(A, B, C, D,  8,  7, 0x698098D8);
+    FF(D, A, B, C,  9, 12, 0x8B44F7AF);
+    FF(C, D, A, B, 10, 17, 0xFFFF5BB1);
+    FF(B, C, D, A, 11, 22, 0x895CD7BE);
+    FF(A, B, C, D, 12,  7, 0x6B901122);
+    FF(D, A, B, C, 13, 12, 0xFD987193);
+    FF(C, D, A, B, 14, 17, 0xA679438E);
+    FF(B, C, D, A, 15, 22, 0x49B40821);
+
+#undef FF
+
+#define GG(a,b,c,d,k,s,t)                                \
+{                                                       \
+    a += ((b & d) | (c & ~d)) + X[k] + t; a = ROTATE_LEFT(a,s) + b; \
+}
+
+#define HH(a,b,c,d,k,s,t)                                \
+{                                                       \
+    a += (b ^ c ^ d) + X[k] + t; a = ROTATE_LEFT(a,s) + b; \
+}
+
+#define II(a,b,c,d,k,s,t)                                \
+{                                                       \
+    a += (c ^ (b | ~d)) + X[k] + t; a = ROTATE_LEFT(a,s) + b; \
+}
+
+    GG(A, B, C, D,  1,  5, 0xF61E2562);
+    GG(D, A, B, C,  6,  9, 0xC040B340);
+    GG(C, D, A, B, 11, 14, 0x265E5A51);
+    GG(B, C, D, A, 14, 20, 0xF6BB4B60);
+    GG(A, B, C, D,  5,  5, 0xD62F105D);
+    GG(D, A, B, C, 10,  9, 0x02441453);
+    GG(C, D, A, B, 15, 14, 0xD8A1E681);
+    GG(B, C, D, A,  4, 20, 0xE7D3FBC8);
+    GG(A, B, C, D,  9,  5, 0x21E1CDE6);
+    GG(D, A, B, C, 14,  9, 0xC33707D6);
+    GG(C, D, A, B,  3, 14, 0xF4D50D87);
+    GG(B, C, D, A,  8, 20, 0x455A14ED);
+    GG(A, B, C, D, 13,  5, 0xA9E3E905);
+    GG(D, A, B, C,  2,  9, 0xFCEFA3F8);
+    GG(C, D, A, B,  7, 14, 0x676F02D9);
+    GG(B, C, D, A, 12, 20, 0x8D2A4C8A);
+
+    HH(A, B, C, D,  5,  4, 0xFFFA3942);
+    HH(D, A, B, C,  8, 11, 0x8771F681);
+    HH(C, D, A, B, 11, 16, 0x6D9D6122);
+    HH(B, C, D, A, 14, 23, 0xFDE5380C);
+    HH(A, B, C, D,  1,  4, 0xA4BEEA44);
+    HH(D, A, B, C,  4, 11, 0x4BDECFA9);
+    HH(C, D, A, B,  7, 16, 0xF6BB4B60);
+    HH(B, C, D, A, 10, 23, 0xBEBFBC70);
+    HH(A, B, C, D, 13,  4, 0x289B7EC6);
+    HH(D, A, B, C,  0, 11, 0xEAA127FA);
+    HH(C, D, A, B,  3, 16, 0xD4EF3085);
+    HH(B, C, D, A,  6, 23, 0x04881D05);
+    HH(A, B, C, D,  9,  4, 0xD9D4D039);
+    HH(D, A, B, C, 12, 11, 0xE6DB99E5);
+    HH(C, D, A, B, 15, 16, 0x1FA27CF8);
+    HH(B, C, D, A,  2, 23, 0xC4AC5665);
+
+    II(A, B, C, D,  0,  6, 0xF4292244);
+    II(D, A, B, C,  7, 10, 0x432AFF97);
+    II(C, D, A, B, 14, 15, 0xAB9423A7);
+    II(B, C, D, A,  5, 21, 0xFC93A039);
+    II(A, B, C, D, 12,  6, 0x655B59C3);
+    II(D, A, B, C,  3, 10, 0x8F0CCC92);
+    II(C, D, A, B, 10, 15, 0xFFEFF47D);
+    II(B, C, D, A,  1, 21, 0x85845DD1);
+    II(A, B, C, D,  8,  6, 0x6FA87E4F);
+    II(D, A, B, C, 15, 10, 0xFE2CE6E0);
+    II(C, D, A, B,  6, 15, 0xA3014314);
+    II(B, C, D, A, 13, 21, 0x4E0811A1);
+    II(A, B, C, D,  4,  6, 0xF7537E82);
+    II(D, A, B, C, 11, 10, 0xBD3AF235);
+    II(C, D, A, B,  2, 15, 0x2AD7D2BB);
+    II(B, C, D, A,  9, 21, 0xEB86D391);
+
+    ctx->state[0] += A;
+    ctx->state[1] += B;
+    ctx->state[2] += C;
+    ctx->state[3] += D;
+}
+
+__device__ void MD5_update(md5_context *ctx, BYTE *input, WORD length) {
     WORD left, fill;
 
     if (!length) return;
@@ -129,20 +170,20 @@ void SHA256_update(sha256_context *ctx, BYTE *input, WORD length) {
     fill = 64 - left;
 
     ctx->total[0] += length;
-    ctx->total[0] &= 0xFFFFFFFFUL;
+    ctx->total[0] &= 0xFFFFFFFF;
 
     if (ctx->total[0] < length) ctx->total[1]++;
 
     if (left && length >= fill) {
         memcpy((void*)(ctx->buffer + left), (void*)input, fill);
-        SHA256_process(ctx, ctx->buffer);
+        MD5_process(ctx, ctx->buffer);
         length -= fill;
         input  += fill;
         left = 0;
     }
 
     while (length >= 64) {
-        SHA256_process(ctx, input);
+        MD5_process(ctx, input);
         length -= 64;
         input  += 64;
     }
@@ -152,7 +193,7 @@ void SHA256_update(sha256_context *ctx, BYTE *input, WORD length) {
     }
 }
 
-static BYTE sha256_padding[64] =
+__device__ static BYTE md5_padding[64] =
 {
  0x80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -160,7 +201,7 @@ static BYTE sha256_padding[64] =
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 };
 
-void SHA256_finish(sha256_context *ctx, BYTE digest[32]) {
+__device__ void MD5_finish(md5_context *ctx, BYTE digest[16]) {
     WORD last, padn;
     WORD high, low;
     BYTE msglen[8];
@@ -175,56 +216,102 @@ void SHA256_finish(sha256_context *ctx, BYTE digest[32]) {
     last = ctx->total[0] & 0x3F;
     padn = (last < 56) ? (56 - last) : (120 - last);
 
-    SHA256_update(ctx, sha256_padding, padn);
-    SHA256_update(ctx, msglen, 8);
+    MD5_update(ctx, md5_padding, padn);
+    MD5_update(ctx, msglen, 8);
 
     PUT_WORD(ctx->state[0], digest,  0);
     PUT_WORD(ctx->state[1], digest,  4);
     PUT_WORD(ctx->state[2], digest,  8);
     PUT_WORD(ctx->state[3], digest, 12);
-    PUT_WORD(ctx->state[4], digest, 16);
-    PUT_WORD(ctx->state[5], digest, 20);
-    PUT_WORD(ctx->state[6], digest, 24);
-    PUT_WORD(ctx->state[7], digest, 28);
 }
 
-int main(int argc, char *argv[]) {
-    sha256_context ctx;
-    BYTE sha256sum[32];
-    char sha256String[65], tmp[MAX_BUFFER_SIZE];
-    int i, j, t;
-
-    if (argc <= 2) {
-        printf("使用方法: %s <hash> <file_name>\n", argv[0]);
-        return 1;
-    }
-
-    FILE *fp = fopen(argv[2], "r");
-    if (fp == NULL) {
-        printf("Failed to open file.\n");
-        return 1;
-    }
+__global__ void cuda_brute_force_attack(char *hash, char *result) {
+    md5_context ctx;
+    BYTE md5sum[16];
+    char md5String[33], password[6];
+    int i, j, k, l, m, t;
 
     t = 1;
-    while (fgets(tmp, MAX_BUFFER_SIZE, fp) != NULL) {
-        tmp[strcspn(tmp, "\r\n")] = 0;
-        SHA256_starts(&ctx);
-        SHA256_update(&ctx, (BYTE *)tmp, strlen(tmp));
-        SHA256_finish(&ctx, sha256sum);
-        for (j = 0; j < 32; j++) {
-            sprintf(&sha256String[j+j], "%02x", sha256sum[j]);
+    for (i = 32; i < 127; i++) {
+        for (j = 32; j < 127; j++) {
+            for (k = 32; k < 127; k++) {
+                for (l = 32; l < 127; l++) {
+                    for (m = 32; m < 127; m++) {
+                        password[0] = i;
+                        password[1] = j;
+                        password[2] = k;
+                        password[3] = l;
+                        password[4] = m;
+                        password[5] = '\0';
+
+                        MD5_starts(&ctx);
+                        MD5_update(&ctx, (BYTE *)password, strlen(password));
+                        MD5_finish(&ctx, md5sum);
+                        for (int n = 0; n < 16; n++) {
+                            sprintf(&md5String[n+n], "%02x", md5sum[n]);
+                        }
+                        if (!strcmp(md5String, hash)) {
+                            strcpy(result, password);
+                            t = 0;
+                            break;
+                        }
+                    }
+                    if (!t) break;
+                }
+                if (!t) break;
+            }
+            if (!t) break;
         }
-        if (!strcmp(sha256String, argv[1])) {
-            printf("Hash found: %s\n", tmp);
-            t = 0;
-            break;
-        }
+        if (!t) break;
     }
     if (t != 0) {
-        printf("Hash not found!\n");
+        strcpy(result, "Password not found!");
     }
+}
 
-    fclose(fp);
+void dictionary_attack(char *hash) {
+    // 辞書攻撃
+}
+
+void brute_force_attack(char *hash) {
+    int size = sizeof(char) * (strlen(hash) + 1);
+    char *dev_hash, *dev_result;
+    char *result = (char*)malloc(size);
+
+    cudaMalloc((void**)&dev_hash, size);
+    cudaMalloc((void**)&dev_result, size);
+
+    cudaMemcpy(dev_hash, hash, size, cudaMemcpyHostToDevice);
+
+    cuda_brute_force_attack<<<1, 1>>>(dev_hash, dev_result);
+
+    cudaMemcpy(result, dev_result, size, cudaMemcpyDeviceToHost);
+
+    printf("Result: %s\n", result);
+
+    free(result);
+    cudaFree(dev_hash);
+    cudaFree(dev_result);
+}
+
+int main() {
+    char hash[33];
+    int option;
+
+    printf("辞書攻撃は1を。総当たり攻撃は2を入力してください: ");
+    scanf("%d", &option);
+
+    if (option == 1) {
+        printf("ハッシュ値を入力してください: ");
+        scanf("%s", hash);
+        dictionary_attack(hash);
+    } else if (option == 2) {
+        printf("ハッシュ値を入力してください: ");
+        scanf("%s", hash);
+        brute_force_attack(hash);
+    } else {
+        printf("無効なオプションです。\n");
+    }
 
     return 0;
 }
