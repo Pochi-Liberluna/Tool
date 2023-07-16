@@ -1,6 +1,6 @@
 #include <iostream>
-#include <fstream>
 #include <cstring>
+#include <cstdlib>
 
 #define MAX_BUFFER_SIZE 1024
 #define BYTE unsigned char
@@ -223,43 +223,93 @@ void MD5_finish(md5_context *ctx, BYTE digest[16]) {
     PUT_WORD(ctx->state[3], digest, 12);
 }
 
-int main(int argc, char *argv[]) {
+__device__ void cuda_brute_force_attack(char *hash, char *result) {
     md5_context ctx;
     BYTE md5sum[16];
-    char md5String[33], tmp[MAX_BUFFER_SIZE];
-    int i, j, t;
-
-    if (argc <= 2) {
-        std::cout << "使用方法: " << argv[0] << " <hash> <file_name>\n";
-        return 1;
-    }
-
-    std::ifstream file(argv[2]);
-    if (!file) {
-        std::cout << "Failed to open file.\n";
-        return 1;
-    }
+    char md5String[33], password[6];
+    int i, j, k, l, m, t;
 
     t = 1;
-    for (i = 0; file.getline(tmp, MAX_BUFFER_SIZE); i++) {
-        tmp[strcspn(tmp, "\r\n")] = 0;
-        MD5_starts(&ctx);
-        MD5_update(&ctx, (BYTE *)tmp, strlen(tmp));
-        MD5_finish(&ctx, md5sum);
-        for (j = 0; j < 16; j++) {
-            sprintf(&md5String[j+j], "%02x", md5sum[j]);
+    for (i = 32; i < 127; i++) {
+        for (j = 32; j < 127; j++) {
+            for (k = 32; k < 127; k++) {
+                for (l = 32; l < 127; l++) {
+                    for (m = 32; m < 127; m++) {
+                        password[0] = i;
+                        password[1] = j;
+                        password[2] = k;
+                        password[3] = l;
+                        password[4] = m;
+                        password[5] = '\0';
+
+                        MD5_starts(&ctx);
+                        MD5_update(&ctx, (BYTE *)password, strlen(password));
+                        MD5_finish(&ctx, md5sum);
+                        for (int n = 0; n < 16; n++) {
+                            sprintf(&md5String[n+n], "%02x", md5sum[n]);
+                        }
+                        if (!strcmp(md5String, hash)) {
+                            strcpy(result, password);
+                            t = 0;
+                            break;
+                        }
+                    }
+                    if (!t) break;
+                }
+                if (!t) break;
+            }
+            if (!t) break;
         }
-        if (!strcmp(md5String, argv[1])) {
-            std::cout << "Password found: " << tmp << std::endl;
-            t = 0;
-            break;
-        }
+        if (!t) break;
     }
     if (t != 0) {
-        std::cout << "Password not found!\n";
+        strcpy(result, "Password not found!");
     }
+}
 
-    file.close();
+void dictionary_attack(char *hash) {
+    // Dictionary attack implementation goes here
+}
+
+void brute_force_attack(char *hash) {
+    int size = sizeof(char) * (strlen(hash) + 1);
+    char *dev_hash, *dev_result;
+    char *result = (char*)malloc(size);
+
+    cudaMalloc((void**)&dev_hash, size);
+    cudaMalloc((void**)&dev_result, size);
+
+    cudaMemcpy(dev_hash, hash, size, cudaMemcpyHostToDevice);
+
+    cuda_brute_force_attack<<<1, 1>>>(dev_hash, dev_result);
+
+    cudaMemcpy(result, dev_result, size, cudaMemcpyDeviceToHost);
+
+    std::cout << "Result: " << result << std::endl;
+
+    free(result);
+    cudaFree(dev_hash);
+    cudaFree(dev_result);
+}
+
+int main() {
+    char hash[33];
+    int option;
+
+    std::cout << "辞書攻撃は1を。総当たり攻撃は2を入力してください: ";
+    std::cin >> option;
+
+    if (option == 1) {
+        std::cout << "ハッシュ値を入力してください: ";
+        std::cin >> hash;
+        dictionary_attack(hash);
+    } else if (option == 2) {
+        std::cout << "ハッシュ値を入力してください: ";
+        std::cin >> hash;
+        brute_force_attack(hash);
+    } else {
+        std::cout << "無効なオプションです。" << std::endl;
+    }
 
     return 0;
 }
