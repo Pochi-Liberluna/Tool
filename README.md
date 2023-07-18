@@ -6,6 +6,6 @@
 # Contact
 ・<a href="https://twitter.com/Pochi-Liberluna">Twitter</a>
 </br>
-・<a href="Pochi_hacker@proton.me">Proton Mail</a>
+・Pochi_hacker@proton.me
 </br>
-・<a href="hackingzer0.jobmail@gmail.com">仕事用メールアドレス</a>
+・hackingzer0.jobmail@gmail.com
