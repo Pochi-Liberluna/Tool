@@ -1,5 +1,5 @@
 ## About
-このディレクトリにある<a href="https://github.com/Pochi-Liberluna/Tool/tree/main/header file(c-cpp)/MersennePrime/Mersenne(Lucas-Lehmer法未実装)/Mersenne.hpp">ヘッダーファイル</a>は外部のライブラリである、
+このディレクトリにある<a href="https://github.com/Pochi-Liberluna/Tool/tree/main/header file(c-cpp)/MersennePrime/Mersenne(Lucas-Lehmer法未実装)/Mersenne.cpp">ソースコード</a>は外部のライブラリである、
 </br>
 GMPを使用します。GMPは大きな整数計算をサポートするライブラリなので選びました。
 # 使用方法
