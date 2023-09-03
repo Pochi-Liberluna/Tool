@@ -4,7 +4,7 @@
 基本的にソースコードはパクってもいいですが、「これ自分がつくりました」などはご遠慮ください。
 </br>
 # Contact
-・<a href="https://twitter.com/Pochi-Liberluna">Twitter</a>
+・<a href="https://twitter.com/Pochi-Liberluna">Twitter(X)</a>
 </br>
 ・Pochi_hacker@proton.me
 </br>
