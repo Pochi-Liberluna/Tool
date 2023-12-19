@@ -2,9 +2,25 @@
 #include<windows.h>
 #include<gdiplus.h>
 #include<cmath>
+#include<tchar.h>
 using namespace Gdiplus;
 
 #pragma comment(lib,"Gdiplus.lib")
+
+//ウィンドウ名、プロパティ、著作権情報を設定する関数を記述(<windows.h>をインクルード)
+
+void SetWindowTitle(HWND hWnd, const wchar_t* newTitle){
+    SetWindowText(hWnd, newTitle);
+    //ウィンドウ名を設定する関数
+}
+void SetWindowProperty(HWND hWnd, const wchar_t* propertyKey, const wchar_t* propertyValue){
+    SetProp(hWnd, propertyKey, (HANDLE)propertyValue);
+    //プロパティを設定する関数
+}
+void SetWindowCopyright(HWND hWnd, consg wchar_t* copyrightInfo){
+    SendMessage(hWnd, WM_SECTION, ICON_BIG, (LPARAM)LoadIcon(GetModuleHandle(NULL), MAKEINTRESOURCE(1))); //仮アイコンの設定
+        SetWindowProperty(hWnd, L"Copyright", copyrightInfo);
+}
 
 const int TIMER_ID = 1;
 const int IMAGE_WIDTH = 100; //画像の幅(px)
@@ -34,8 +50,16 @@ LRESULT CALLBACK ScreenSaverProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM 
                 //スクリーンセーバー待機時間を設定
                 SystemParametersInfo(SPI_SETSCREENSAVETIMEOUT, 5 * 60, NULL, 0);
 
-                // タイマーを設定
+                //タイマーを設定
                 SetTimer(hWnd, TIMER_ID, 1000 / 30, NULL); //30fps
+
+                //タイトル設定
+                SetWindowTitle(hWnd, L"Liberluna Screen Saver");
+                //プロパティ設定
+                SetWindowProperty(hWnd, L"Property", L"Custom Value");
+                //著作権情報設定
+                SetWindowCopyright(hWnd, L"©︎ 2023-2024 Liberluna - Pochi");
+            
             }
             break;
 
