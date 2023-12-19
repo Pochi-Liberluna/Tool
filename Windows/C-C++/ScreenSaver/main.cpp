@@ -54,11 +54,11 @@ LRESULT CALLBACK ScreenSaverProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM 
                 SetTimer(hWnd, TIMER_ID, 1000 / 30, NULL); //30fps
 
                 //タイトル設定
-                SetWindowTitle(hWnd, L"Liberluna Screen Saver");
+                SetWindowTitle(hWnd, L"MyScreenSaver");
                 //プロパティ設定
                 SetWindowProperty(hWnd, L"Property", L"Custom Value");
                 //著作権情報設定
-                SetWindowCopyright(hWnd, L"©︎ 2023-2024 Liberluna - Pochi");
+                SetWindowCopyright(hWnd, L"©︎ ");
             
             }
             break;
