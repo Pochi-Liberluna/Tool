@@ -17,7 +17,7 @@ void SetWindowProperty(HWND hWnd, const wchar_t* propertyKey, const wchar_t* pro
     SetProp(hWnd, propertyKey, (HANDLE)propertyValue);
     //プロパティを設定する関数
 }
-void SetWindowCopyright(HWND hWnd, consg wchar_t* copyrightInfo){
+void SetWindowCopyright(HWND hWnd, const wchar_t* copyrightInfo){
     SendMessage(hWnd, WM_SECTION, ICON_BIG, (LPARAM)LoadIcon(GetModuleHandle(NULL), MAKEINTRESOURCE(1))); //仮アイコンの設定
         SetWindowProperty(hWnd, L"Copyright", copyrightInfo);
 }
